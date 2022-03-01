@@ -2,6 +2,7 @@ from django.test import LiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import WebDriverException
+from selenium.webdriver.common.by import By
 import time
 
 MAX_WAIT = 10
@@ -28,11 +29,11 @@ class NewVisitorTest(LiveServerTestCase):
                 time.sleep(0.5)
 
     
-    def test_can_start_a_list_and_retriver_it_later(self):
+    def test_can_start_a_list_for_one_user(self):
         self.browser.get(self.live_server_url)
 
         self.assertIn("To-Do", self.browser.title)
-        header_text = self.browser.find_element_by_tag_name("h1").text
+        header_text = self.browser.find_element(By.TAG_NAME, "h1").text
         self.assertIn("To-Do", header_text)
 
         inputbox = self.browser.find_element_by_id("id_new_item")
@@ -84,3 +85,24 @@ class NewVisitorTest(LiveServerTestCase):
         page_text = self.browser.find_element_by_tag_name('body').text
         self.assertNotIn('Buy peacock feathers', page_text)
         self.assertIn('Buy milk', page_text)
+    
+    def test_layout_and_styling(self):
+        self.browser.get(self.live_server_url)
+        self.browser.set_window_size(1024, 768)
+        inputbox = self.browser.find_element_by_id('id_new_item')
+
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta=10
+        )
+
+        inputbox.send_keys('testing')
+        inputbox.send_keys(Keys.ENTER)
+        self.wait_for_row_in_list_table('1: testing')
+        inputbox = self.browser.find_element_by_id('id_new_item')
+        self.assertAlmostEqual(
+            inputbox.location['x'] + inputbox.size['width'] / 2,
+            512,
+            delta= 10
+        )

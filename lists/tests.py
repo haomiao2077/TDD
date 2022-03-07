@@ -1,5 +1,5 @@
-from urllib import response
 from django.test import TestCase
+
 from lists.models import Item, List
 
 
@@ -8,7 +8,7 @@ class HomePageTest(TestCase):
     def test_uses_home_template(self):
         response = self.client.get("/")
         self.assertTemplateUsed(response, "home.html")
-    
+
     def test_can_save_a_POST_request(self):
         self.client.post("/lists/new", data={"item_text": "A new list item"})
         self.assertEqual(Item.objects.count(), 1)
@@ -43,7 +43,7 @@ class ListAndItemModelsTest(TestCase):
         saved_items = Item.objects.all()
         self.assertEqual(saved_items.count(), 2)
 
-        first_saved_item  = saved_items[0]
+        first_saved_item = saved_items[0]
         second_saved_item = saved_items[1]
 
         self.assertEqual(first_saved_item.text, 'The first (ever) list item')
@@ -74,9 +74,8 @@ class ListViewTest(TestCase):
         self.assertContains(response, 'itemey 2')
         self.assertNotContains(response, 'other list item 1')
         self.assertNotContains(response, 'other list item 2')
-    
+
     def test_passes_correct_list_to_template(self):
-        other_list = List.objects.create()
         correct_list = List.objects.create()
         response = self.client.get(f'/lists/{correct_list.id}/')
         self.assertEqual(response.context['list'], correct_list)
@@ -95,9 +94,10 @@ class NewListTest(TestCase):
         new_list = List.objects.first()
         self.assertRedirects(response, f'/lists/{new_list.id}/')
 
+
 class NewItemTest(TestCase):
+
     def test_can_save_a_POST_request_to_an_existing_list(self):
-        other_list = List.objects.create()
         correct_list = List.objects.create()
 
         self.client.post(
@@ -109,9 +109,8 @@ class NewItemTest(TestCase):
         new_item = Item.objects.first()
         self.assertEqual(new_item.text, 'A new item for an existing list')
         self.assertEqual(new_item.list, correct_list)
-    
+
     def test_redirects_to_list_view(self):
-        other_list = List.objects.create()
         correct_list = List.objects.create()
 
         response = self.client.post(

@@ -1,0 +1,12 @@
+[Unit]
+Description=Gunicorn server for haomiao-cc.xyz
+
+[Service]
+Restart=on_failure
+User=haomiao
+WorkingDirectory=/home/haomiao/sites/haomiao-cc.xyz/source
+ExecStart=/home/haomiao/sites/haomiao-cc.xyz/virtualenv/bin/gunicorn \
+        --bind unix:/tmp/haomiao-cc.xyz.socket superlists.wsgi:application
+
+[Install]
+WantedBy=multi-user.target
